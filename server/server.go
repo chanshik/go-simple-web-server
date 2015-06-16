@@ -306,8 +306,12 @@ func (self *WebServer) stubHandler(w http.ResponseWriter, r *http.Request) {
 		Req: r,
 		Resp: &response,
 		Tpl: template,
-		Vars: *methodVars,
+//		Vars: *methodVars,
 	}
+	if methodVars != nil {
+		param.Vars = *methodVars
+	}
+
 	method.Handler(&param)
 }
 
@@ -347,6 +351,7 @@ func (self *WebServer) AddHandler(url string, urlHandler UrlHandler) {
 	if exists == false {
 		self.urlHandlerExistsMap[matchUrl] = true
 
+		log.Printf("UseDigestAuth: %v\n", urlHandler.UseDigestAuth)
 		if urlHandler.UseDigestAuth {
 			http.HandleFunc(matchUrl, auth.JustCheck(self.httpAuth, self.stubHandler))
 		} else {
